@@ -88,9 +88,9 @@ let topRouter = router {
     //GITHUB ISSUE
     //UNCOMMENT one at a time and RUN to repro
     //THIS WORKS
-    //deletef "/delete/%s" apiDeleteExample2
+    deletef "/delete/%i" apiDeleteExample2
     //404: SEND TO A DIFFERENT ROUTER FAILS
-    deletef "/delete/%i" (fun (_:int) -> deleteRouter)
+    //deletef "/delete/%i" (fun (_:int) -> deleteRouter)
     //404: SEND TO CONTROLLER FAILS
     //deletef "/delete/%i" (fun (_ : int) -> userController)
 
