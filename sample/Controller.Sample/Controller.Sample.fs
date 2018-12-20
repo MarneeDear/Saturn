@@ -67,8 +67,12 @@ let apiDeleteExample2 id = sprintf "Echo: %i" id |> text
 
 let deleteRouter = router {
     //I tried both of these but neither works.
-    forwardf "delete/%i" apiDeleteExample2
-    //deletef "delete/%i" apiDeleteExample2
+    //THIS WORKS
+    forwardf "/delete/%i" apiDeleteExample2
+    //THIS WORKS
+    //deletef "/delete/%i" apiDeleteExample2
+    //404: fails when going to the controller
+    //forwardf "/delete/%i" (fun (_ : int) -> userController)
 }
 
 let otherRouter = router {
@@ -88,10 +92,10 @@ let topRouter = router {
     //GITHUB ISSUE
     //UNCOMMENT one at a time and RUN to repro
     //THIS WORKS
-    deletef "/delete/%i" apiDeleteExample2
-    //404: SEND TO A DIFFERENT ROUTER FAILS
-    //deletef "/delete/%i" (fun (_:int) -> deleteRouter)
-    //404: SEND TO CONTROLLER FAILS
+    //deletef "/delete/%i" apiDeleteExample2
+    //404 only when forwards to a controller
+    deletef "/delete/%i" (fun (_:int) -> deleteRouter)
+    //FAIL WITH 404: SEND TO CONTROLLER
     //deletef "/delete/%i" (fun (_ : int) -> userController)
 
     not_found_handler (setStatusCode 404 >=> text "Not Found")
