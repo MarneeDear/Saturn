@@ -11,6 +11,8 @@ let commentController userId = controller {
     add (fun ctx -> (sprintf "Comment Add handler for user %i" userId ) |> Controller.text ctx)
     show (fun ctx id -> (sprintf "Show comment %s handler for user %i" id userId ) |> Controller.text ctx)
     edit (fun ctx id -> (sprintf "Edit comment %s handler for user %i" id userId )  |> Controller.text ctx)
+    delete (fun ctx id -> (sprintf "Delete comment %s handler for user %i" id userId )  |> Controller.text ctx)
+
 }
 
 let userControllerVersion1 = controller {
@@ -21,6 +23,7 @@ let userControllerVersion1 = controller {
     add (fun ctx -> "Add handler version 1" |> Controller.text ctx)
     show (fun ctx id -> (sprintf "Show handler version 1 - %i" id) |> Controller.text ctx)
     edit (fun ctx id -> (sprintf "Edit handler version 1 - %i" id) |> Controller.text ctx)
+    delete (fun ctx id -> (sprintf "Delete handler version 1 - %i" id) |> Controller.text ctx)
 }
 
 let userController = controller {
@@ -59,10 +62,20 @@ let typedController = controller {
     })
 }
 
+//let apiDeleteExample = text "this is a delete example"
+let apiDeleteExample2 id = sprintf "Echo: %i" id |> text
+
+let deleteRouter = router {
+    deletef "delete/%i" apiDeleteExample2
+
+}
+
 let otherRouter = router {
     get "/dsa" (text "")
     getf "/dsa/%s" (text)
     forwardf "/ddd/%s" (fun (_ : string) -> userControllerVersion1)
+    //forwardf "/delete/%s" (fun (_ : string) -> userController)
+    //deletef "/delete/%s" userController
     not_found_handler (setStatusCode 404 >=> text "Not Found")
 }
 
@@ -71,6 +84,16 @@ let topRouter = router {
     forward "/users" userController
     forward "/typed" typedController
     forwardf "/%s/%s/abc" (fun (_ : string * string) -> otherRouter)
+    //GITHUB ISSUE
+    //UNCOMMENT one at a time and RUN to repro
+    //THIS WORKS
+    //deletef "/delete/%s" apiDeleteExample2
+    //404: SEND TO A DIFFERENT ROUTER FAILS
+    //deletef "/delete/%i" (fun (_:int) -> deleteRouter)
+    //404: SEND TO CONTROLLER FAILS
+    //deletef "/delete/%i" (fun (_ : int) -> userController)
+    not_found_handler (setStatusCode 404 >=> text "Not Found")
+
 }
 
 let app = application {
