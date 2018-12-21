@@ -64,6 +64,7 @@ let typedController = controller {
 
 //let apiDeleteExample = text "this is a delete example"
 let apiDeleteExample2 id = sprintf "Echo: %i" id |> text
+let getIntExample (id : int) = text "YOU GOT ME"
 
 let deleteRouter = router {
     //I tried both of these but neither works.
@@ -97,6 +98,17 @@ let topRouter = router {
     deletef "/delete/%i" (fun (_:int) -> deleteRouter)
     //FAIL WITH 404: SEND TO CONTROLLER
     //deletef "/delete/%i" (fun (_ : int) -> userController)
+
+    //Use %d for int64
+    //https://github.com/giraffe-fsharp/Giraffe/issues/184
+    //getf "/get/%i" getIntExample
+
+    //GITHUB ISSUE
+    //THIS WORKS
+    //getf "/get/%i/edit" getIntExample
+    //404
+    //getf "/get/%i/edit" (fun (_ : int) -> userController)
+
 
     not_found_handler (setStatusCode 404 >=> text "Not Found")
 
