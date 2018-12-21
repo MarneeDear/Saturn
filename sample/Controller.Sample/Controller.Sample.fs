@@ -1,10 +1,13 @@
 module Controller.Sample
 
 open Saturn
+open Saturn.Controller
 open Giraffe.Core
 open Giraffe.ResponseWriters
 open FSharp.Control.Tasks.V2.ContextInsensitive
 open System
+open Giraffe
+open Giraffe
 
 let commentController userId = controller {
     index (fun ctx -> (sprintf "Comment Index handler for user %i" userId ) |> Controller.text ctx)
@@ -80,7 +83,15 @@ let otherRouter = router {
     get "/dsa" (text "")
     getf "/dsa/%s" (text)
     forwardf "/ddd/%s" (fun (_ : string) -> userControllerVersion1)
-    //forwardf "/delete/%s" (fun (_ : string) -> userController)
+    forwardf "/get/%i/edit" (fun (_ : int) -> userController)
+
+    //ISSUE #160
+    //THIS WORKS
+    //forwardf "/delete/%i" getIntExample
+
+    //THIS DOES NOT WORK (404)
+    forwardf "/delete/%i" (fun (_ : int) -> userController)
+
     //deletef "/delete/%s" userController
     not_found_handler (setStatusCode 404 >=> text "Not Found")
 }
@@ -90,14 +101,20 @@ let topRouter = router {
     forward "/users" userController
     forward "/typed" typedController
     forwardf "/%s/%s/abc" (fun (_ : string * string) -> otherRouter)
+
     //GITHUB ISSUE #160
     //UNCOMMENT one at a time and RUN to repro
     //THIS WORKS
     //deletef "/delete/%i" apiDeleteExample2
     //404 only when forwards to a controller
     //deletef "/delete/%i" (fun (_:int) -> deleteRouter)
-    //FAIL WITH 404: SEND TO CONTROLLER
-    //deletef "/delete/%i" (fun (_ : int) -> userController)
+
+    //FAIL WITH 404: SEND TO CONTROLLER (both deletef and forwardf 404)
+    //deletef "/delete/%i" (fun (_:int) -> userController)
+    //forwardf "/delete/%i" (fun (_ : int) -> userController)
+    //deletef "/delete/%i" (fun (_:int) -> otherRouter)
+    //forwardf "/delete/%i" (fun (_ : int) -> otherRouter)
+
 
     //Use %d for int64
     //https://github.com/giraffe-fsharp/Giraffe/issues/184
@@ -108,7 +125,9 @@ let topRouter = router {
     //getf "/get/%i/edit" getIntExample
     //404
     //getf "/get/%i/edit" (fun (_ : int) -> userController)
-
+    //OK
+    //forwardf "/get/%i/edit" (fun (_ : int) -> userController)
+    //forwardf "/get/%i/edit" (fun (_:int) -> otherRouter)
 
     not_found_handler (setStatusCode 404 >=> text "Not Found")
 
