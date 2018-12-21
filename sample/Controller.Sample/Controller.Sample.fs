@@ -90,12 +90,12 @@ let topRouter = router {
     forward "/users" userController
     forward "/typed" typedController
     forwardf "/%s/%s/abc" (fun (_ : string * string) -> otherRouter)
-    //GITHUB ISSUE
+    //GITHUB ISSUE #160
     //UNCOMMENT one at a time and RUN to repro
     //THIS WORKS
     //deletef "/delete/%i" apiDeleteExample2
     //404 only when forwards to a controller
-    deletef "/delete/%i" (fun (_:int) -> deleteRouter)
+    //deletef "/delete/%i" (fun (_:int) -> deleteRouter)
     //FAIL WITH 404: SEND TO CONTROLLER
     //deletef "/delete/%i" (fun (_ : int) -> userController)
 
@@ -103,7 +103,7 @@ let topRouter = router {
     //https://github.com/giraffe-fsharp/Giraffe/issues/184
     //getf "/get/%i" getIntExample
 
-    //GITHUB ISSUE
+    //GITHUB ISSUE #161
     //THIS WORKS
     //getf "/get/%i/edit" getIntExample
     //404
