@@ -39,6 +39,11 @@ let userController = controller {
     error_handler (fun ctx ex -> sprintf "Error handler no version - %s" ex.Message |> Controller.text ctx)
 }
 
+let deleteController = controller {
+    delete (fun ctx id -> (sprintf "Delete controller. This is the id - %s" id) |> Controller.text ctx)
+    error_handler (fun ctx ex -> sprintf "There was an error - %s" ex.Message |> Controller.text ctx)
+}
+
 type Response = {
     a: string
     b: string
@@ -71,6 +76,10 @@ let topRouter = router {
     forward "/users" userController
     forward "/typed" typedController
     forwardf "/%s/%s/abc" (fun (_ : string * string) -> otherRouter)
+
+    // ISSUE
+    // The id that ends up in the controller function is the path, not the id
+    deletef "/delete/%s" (fun (_:string) -> deleteController)
 }
 
 let app = application {
