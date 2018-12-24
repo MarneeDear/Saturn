@@ -40,9 +40,13 @@ let userController = controller {
 }
 
 let deleteController = controller {
+    show (fun ctx id -> (sprintf "Index controller. This is the id - %s" id) |> Controller.text ctx)
     delete (fun ctx id -> (sprintf "Delete controller. This is the id - %s" id) |> Controller.text ctx)
     error_handler (fun ctx ex -> sprintf "There was an error - %s" ex.Message |> Controller.text ctx)
 }
+
+let deleteMe (id:string) =
+    text (sprintf "deletMe YOUR ID IS - %s" id)
 
 type Response = {
     a: string
@@ -77,9 +81,11 @@ let topRouter = router {
     forward "/typed" typedController
     forwardf "/%s/%s/abc" (fun (_ : string * string) -> otherRouter)
 
-    // ISSUE
-    // The id that ends up in the controller function is the path, not the id
+    // ISSUE #162
+    // The id that ends up in the controller function looks like the path. It should just be the id
     deletef "/delete/%s" (fun (_:string) -> deleteController)
+    getf "/delete/%s" (fun (_:string) -> deleteController)
+    //getf "/delete/%s" deleteMe
 }
 
 let app = application {
