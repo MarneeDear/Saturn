@@ -40,7 +40,7 @@ let userController = controller {
 }
 
 let deleteController = controller {
-    show (fun ctx id -> (sprintf "Index controller. This is the id - %s" id) |> Controller.text ctx)
+    show (fun ctx id -> (sprintf "Show controller. This is the id - %s" id) |> Controller.text ctx)
     delete (fun ctx id -> (sprintf "Delete controller. This is the id - %s" id) |> Controller.text ctx)
     error_handler (fun ctx ex -> sprintf "There was an error - %s" ex.Message |> Controller.text ctx)
 }
@@ -76,6 +76,7 @@ let otherRouter = router {
 }
 
 let topRouter = router {
+    case_insensitive
     forward "/users" userControllerVersion1
     forward "/users" userController
     forward "/typed" typedController
